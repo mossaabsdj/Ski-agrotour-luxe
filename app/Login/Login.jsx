@@ -1,9 +1,13 @@
 "use client";
+import { Eye, EyeOff } from "lucide-react";
+
 import React, { useState } from "react";
 import { FaFacebookF, FaTwitter, FaInstagram } from "react-icons/fa";
 import { countries } from "@/data/countries";
 import Swal from "sweetalert2";
 import { signIn } from "next-auth/react";
+import OtpModal from "@/app/component/OtpModal";
+
 import Progression from "@/app/component/Proogression/page";
 const COLORS = {
   formBorder: "border-green-500",
@@ -68,7 +72,12 @@ const WelcomeSection = ({ title, description, isRight }) => (
 export default function FlipAuthPages() {
   const [isFlipped, setIsFlipped] = useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
+  const [showOtpModal, setShowOtpModal] = useState(false);
+  const [pendingUser, setPendingUser] = useState(null);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
+  const [showConfirm, setShowConfirm] = useState(false);
   const [loginData, setLoginData] = useState({ email: "", password: "" });
   const [registerData, setRegisterData] = useState({
     fullName: "",
@@ -216,61 +225,52 @@ export default function FlipAuthPages() {
       return;
     }
     setIsLoading(true);
-
-    const res = await fetch("/api/register", {
+    // 1️⃣ Send OTP first
+    const otpRes = await fetch("/api/register/otp", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(registerData), // contains fullName, email, phone, country, password, confirmPassword
+      body: JSON.stringify({ email }),
     });
-
-    const data = await res.json();
     setIsLoading(false);
 
-    if (res.ok) {
-      // ✅ Registration success
-      Swal.fire({
-        icon: "success",
-        title: "Registration Successful",
-        showConfirmButton: false,
-        customClass: { popup: "shadow-lg rounded-lg" },
-        timer: 1500,
-      }).then(async () => {
-        setIsLoading(true);
-
-        // 🔐 Automatically sign in using NextAuth
-        const loginRes = await signIn("credentials", {
-          username: registerData.email, // use same field as login
-          password: registerData.password,
-          redirect: false,
-          callbackUrl: "/DashBoard",
-        });
-
-        if (loginRes?.ok) {
-          window.location.href = loginRes.url;
-        } else {
-          Swal.fire({
-            icon: "warning",
-            title: "Account created, but login failed",
-            text: "Please try logging in manually.",
-          });
-        }
-      });
-    } else {
-      // ❌ Registration failed
+    if (!otpRes.ok) {
       Swal.fire({
         icon: "error",
-        title: "Registration Failed",
-        text: data.message,
-        confirmButtonColor: "#d32f2f",
-        customClass: { popup: "shadow-lg rounded-lg" },
+        title: "Failed to send OTP",
       });
+      return;
     }
+    // 2️⃣ Store user data locally
+    setPendingUser({
+      fullName,
+      email,
+      phone,
+      country,
+      password,
+      confirmPassword,
+    });
+
+    // 3️⃣ Show OTP Modal
+    setShowOtpModal(true);
   };
 
   return (
     <>
       {" "}
       {isLoading && <Progression isVisible={true} />}
+      {showOtpModal && (
+        <OtpModal
+          email={pendingUser.email}
+          onExit={() => setShowOtpModal(false)}
+          onVerify={{
+            userData: pendingUser,
+            success: () => {
+              setShowOtpModal(false);
+              setIsFlipped(false); // go back to login scene
+            },
+          }}
+        />
+      )}
       <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
         <div className="w-full max-w-6xl" style={{ perspective: "2000px" }}>
           <div
@@ -386,7 +386,6 @@ export default function FlipAuthPages() {
                           onChange={handleRegisterChange("fullName")}
                           className="w-full"
                         />
-
                         <FormInput
                           type="email"
                           placeholder="Email"
@@ -394,7 +393,6 @@ export default function FlipAuthPages() {
                           onChange={handleRegisterChange("email")}
                           className="w-full"
                         />
-
                         <select
                           value={registerData.country}
                           onChange={handleRegisterChange("country")}
@@ -408,7 +406,6 @@ export default function FlipAuthPages() {
                             </option>
                           ))}
                         </select>
-
                         <FormInput
                           type="tel"
                           placeholder="Phone Number"
@@ -418,21 +415,54 @@ export default function FlipAuthPages() {
                           maxLength={12} // 👈 limits input to 10 characters
                         />
 
-                        <FormInput
-                          type="password"
-                          placeholder="Password"
-                          value={registerData.password}
-                          onChange={handleRegisterChange("password")}
-                          className="w-full"
-                        />
-
-                        <FormInput
-                          type="password"
-                          placeholder="Confirm Password"
-                          value={registerData.confirmPassword}
-                          onChange={handleRegisterChange("confirmPassword")}
-                          className="w-full"
-                        />
+                        <div className="relative w-full">
+                          <FormInput
+                            type={showPassword ? "text" : "password"}
+                            placeholder="Password"
+                            value={registerData.password}
+                            onChange={handleRegisterChange("password")}
+                            className="w-full pr-10"
+                          />
+                          <button
+                            type="button"
+                            onMouseDown={() => setShowPassword(true)}
+                            onMouseUp={() => setShowPassword(false)}
+                            onMouseLeave={() => setShowPassword(false)}
+                            onTouchStart={() => setShowPassword(true)}
+                            onTouchEnd={() => setShowPassword(false)}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                          >
+                            {showPassword ? (
+                              <EyeOff size={20} />
+                            ) : (
+                              <Eye size={20} />
+                            )}
+                          </button>
+                        </div>
+                        <div className="relative w-full">
+                          <FormInput
+                            type={showConfirmPassword ? "text" : "password"}
+                            placeholder="Confirm Password"
+                            value={registerData.confirmPassword}
+                            onChange={handleRegisterChange("confirmPassword")}
+                            className="w-full pr-10"
+                          />
+                          <button
+                            type="button"
+                            onMouseDown={() => setShowConfirmPassword(true)}
+                            onMouseUp={() => setShowConfirmPassword(false)}
+                            onMouseLeave={() => setShowConfirmPassword(false)}
+                            onTouchStart={() => setShowConfirmPassword(true)}
+                            onTouchEnd={() => setShowConfirmPassword(false)}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                          >
+                            {showConfirmPassword ? (
+                              <EyeOff size={20} />
+                            ) : (
+                              <Eye size={20} />
+                            )}
+                          </button>
+                        </div>
                       </div>
 
                       <button
