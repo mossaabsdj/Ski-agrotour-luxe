@@ -142,29 +142,6 @@ export default function OtpModal({ email, onExit }) {
         <h2 className="text-xl font-bold text-gray-800 text-center">
           Reset Password
         </h2>
-        <p className="text-gray-600 text-center mt-1">
-          Enter the OTP sent to <b>{email}</b>
-        </p>
-
-        {/* SEND OTP BUTTON */}
-        <button
-          onClick={handleResend}
-          className="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-lg font-semibold mt-3"
-          disabled={!canResend}
-        >
-          {canResend ? "Send OTP" : `Resend available in ${counter}s`}
-        </button>
-
-        {/* OTP INPUT */}
-        <input
-          type="text"
-          value={otp}
-          onChange={(e) =>
-            setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))
-          }
-          className="mt-4 w-full border border-gray-300 rounded-lg p-3 text-lg tracking-widest text-center"
-          placeholder="123456"
-        />
 
         {/* NEW PASSWORD */}
         <input
@@ -183,6 +160,34 @@ export default function OtpModal({ email, onExit }) {
           className="mt-3 w-full border border-gray-300 rounded-lg p-3"
           placeholder="Confirm New Password"
         />
+
+        <p className="text-gray-600 text-center mt-3">
+          Enter the OTP sent to <b>{email}</b>
+        </p>
+        {/* OTP INPUT */}
+        <input
+          type="text"
+          value={otp}
+          onChange={(e) =>
+            setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))
+          }
+          className="mt-4 w-full border border-gray-300 rounded-lg p-3 text-lg tracking-widest text-center"
+          placeholder="123456"
+        />
+        {/* SEND/RESEND OTP TEXT BUTTON */}
+        <div className="text-center mt-2">
+          <button
+            onClick={handleResend}
+            className={`text-sm font-medium underline ${
+              canResend
+                ? "text-blue-600 hover:text-blue-700 cursor-pointer"
+                : "text-gray-400 cursor-not-allowed"
+            }`}
+            disabled={!canResend}
+          >
+            {canResend ? "Send OTP" : `Resend available in ${counter}s`}
+          </button>
+        </div>
 
         {/* VERIFY BUTTON */}
         <button

@@ -291,7 +291,7 @@ export default function FlipAuthPages() {
               onClick={handleResetPassword}
               className="w-full mt-6 py-4 bg-emerald-600 hover:bg-emerald-700 text-white text-lg font-bold rounded-full shadow-md transition-colors"
             >
-              Send Reset Link
+              Next
             </button>
 
             <button
