@@ -52,9 +52,9 @@ const SocialButtons = () => (
 
 const WelcomeSection = ({ title, description, isRight }) => (
   <div
-    className={`w-full md:w-1/2 ${
+    className={`hidden md:flex w-full md:w-1/2 ${
       COLORS.rightPaneBg
-    } text-white flex flex-col justify-center items-center text-center p-10 ${
+    } text-white flex-col justify-center items-center text-center p-10 ${
       isRight ? "order-2" : "order-1"
     }`}
     style={{ minHeight: "600px" }}
