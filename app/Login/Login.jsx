@@ -7,7 +7,7 @@ import { countries } from "@/data/countries";
 import Swal from "sweetalert2";
 import { signIn } from "next-auth/react";
 import OtpModal from "@/app/component/OtpModal";
-
+import ForgotOtpModal from "@/app/component/OtpModalForgot";
 import Progression from "@/app/component/Proogression/page";
 const COLORS = {
   formBorder: "border-green-500",
@@ -73,9 +73,14 @@ export default function FlipAuthPages() {
   const [isFlipped, setIsFlipped] = useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
   const [showOtpModal, setShowOtpModal] = useState(false);
+  const [showForogtOtpModal, setShowForogtOtpModal] = useState(false);
+
   const [pendingUser, setPendingUser] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showResetPassword, setShowResetPassword] = useState(false);
+
+  const [resetEmail, setResetEmail] = useState("");
 
   const [showConfirm, setShowConfirm] = useState(false);
   const [loginData, setLoginData] = useState({ email: "", password: "" });
@@ -87,9 +92,12 @@ export default function FlipAuthPages() {
     password: "",
     confirmPassword: "",
   });
-
   const handleLoginChange = (field) => (e) => {
     setLoginData((prev) => ({ ...prev, [field]: e.target.value }));
+  };
+  const handleForgotPassword = () => {
+    // Ex: ouvrir une modal, naviguer vers une page, afficher un formulaire, etc.
+    setShowResetPassword(true);
   };
 
   const handleRegisterChange = (field) => (e) => {
@@ -253,22 +261,66 @@ export default function FlipAuthPages() {
     // 3️⃣ Show OTP Modal
     setShowOtpModal(true);
   };
-
+  const handleResetPassword = () => {
+    setShowResetPassword(false);
+    setShowForogtOtpModal(true);
+  };
   return (
     <>
       {" "}
+      {showResetPassword && (
+        <div className="fixed inset-0 z-[1000]  bg-opacity-40 backdrop-blur-md flex justify-center items-center">
+          <div className="bg-white p-10 rounded-3xl w-[90%] max-w-xl shadow-2xl transform scale-105">
+            <h3 className="text-3xl font-extrabold text-center mb-6">
+              Reset Password
+            </h3>
+
+            <p className="text-gray-600 text-base mb-6 text-center">
+              Enter your email and we will send you a reset link.
+            </p>
+
+            <FormInput
+              type="email"
+              placeholder="Email"
+              value={resetEmail}
+              onChange={(e) => setResetEmail(e.target.value)}
+              className="text-lg w-full"
+            />
+
+            <button
+              onClick={handleResetPassword}
+              className="w-full mt-6 py-4 bg-emerald-600 hover:bg-emerald-700 text-white text-lg font-bold rounded-full shadow-md transition-colors"
+            >
+              Send Reset Link
+            </button>
+
+            <button
+              className="w-full mt-3 text-gray-600 hover:text-gray-800 underline text-base transition-colors"
+              onClick={() => setShowResetPassword(false)}
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
       {isLoading && <Progression isVisible={true} />}
       {showOtpModal && (
         <OtpModal
-          email={pendingUser.email}
+          email={pendingUser?.email || resetEmail}
           onExit={() => setShowOtpModal(false)}
           onVerify={{
-            userData: pendingUser,
+            userData: pendingUser || resetEmail,
             success: () => {
               setShowOtpModal(false);
               setIsFlipped(false); // go back to login scene
             },
           }}
+        />
+      )}
+      {showForogtOtpModal && (
+        <ForgotOtpModal
+          email={resetEmail}
+          onExit={() => setShowForogtOtpModal(false)}
         />
       )}
       <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
@@ -323,7 +375,15 @@ export default function FlipAuthPages() {
                       >
                         Log In
                       </button>
-
+                      <p className="text-gray-700 text-sm text-center pt-2">
+                        <button
+                          type="button"
+                          onClick={handleForgotPassword}
+                          className="text-emerald-600 font-semibold hover:underline"
+                        >
+                          Forgot Password?
+                        </button>
+                      </p>
                       <p className="text-gray-700 text-sm text-center pt-2">
                         Don't have an account?{" "}
                         <button
