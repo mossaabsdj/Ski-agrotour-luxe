@@ -269,140 +269,142 @@ const CheesePage = forwardRef(({ FarmData }, refCommande) => {
             </div>
           </Card>
         </motion.div>
+        <div ref={refCommande}>
+          {" "}
+          {/* Cheese Varieties Section */}
+          <motion.div
+            ref={cheeseVarietiesRef}
+            initial={{ opacity: 0, y: 60 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 60 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            viewport={{ once: false, amount: 0.3 }}
+            className="w-full max-w-6xl snap-start min-h-screen p-4 sm:p-10 flex flex-col items-center justify-center"
+          >
+            <Card className="w-full shadow-lg min-h-[80vh] flex flex-col items-center bg-white p-4 sm:p-10">
+              <CardHeader>
+                <CardTitle className="text-3xl sm:text-4xl font-bold text-center">
+                  Cheese Varieties
+                </CardTitle>
+              </CardHeader>
 
-        {/* Cheese Varieties Section */}
-        <motion.div
-          ref={cheeseVarietiesRef}
-          initial={{ opacity: 0, y: 60 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: 60 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-          viewport={{ once: false, amount: 0.3 }}
-          className="w-full max-w-6xl snap-start min-h-screen p-4 sm:p-10 flex flex-col items-center justify-center"
-        >
-          <Card className="w-full shadow-lg min-h-[80vh] flex flex-col items-center bg-white p-4 sm:p-10">
-            <CardHeader>
-              <CardTitle className="text-3xl sm:text-4xl font-bold text-center">
-                Cheese Varieties
-              </CardTitle>
-            </CardHeader>
-
-            <div className="relative w-full">
-              {/* Left Scroll Button (desktop only) */}
-              <button
-                onClick={() => scrollByCard(-1)}
-                className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white/80 hover:bg-white border border-gray-200 rounded-full shadow p-2 hidden md:block"
-              >
-                <svg
-                  width="28"
-                  height="28"
-                  stroke="currentColor"
-                  strokeWidth="2"
+              <div className="relative w-full">
+                {/* Left Scroll Button (desktop only) */}
+                <button
+                  onClick={() => scrollByCard(-1)}
+                  className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white/80 hover:bg-white border border-gray-200 rounded-full shadow p-2 hidden md:block"
                 >
-                  <path d="M17 21l-6-7 6-7" />
-                </svg>
-              </button>
+                  <svg
+                    width="28"
+                    height="28"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <path d="M17 21l-6-7 6-7" />
+                  </svg>
+                </button>
 
-              {/* Scrollable Product Cards */}
-              <div
-                ref={scrollerRef}
-                className="flex overflow-x-auto gap-4 sm:gap-6 md:gap-8 w-full pb-4 snap-x snap-mandatory px-1 sm:px-2"
-                style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
-              >
-                {loading ? (
-                  [1, 2, 3].map((i) => (
-                    <div
-                      key={i}
-                      className="product-card group snap-center min-w-[260px] sm:min-w-[300px] max-w-[350px] bg-gray-50 rounded-xl shadow-md flex flex-col items-center overflow-hidden"
-                    >
-                      <div className="w-full h-[220px] relative">
-                        <Skeleton className="w-full h-full" />
-                      </div>
-                      <CardContent className="p-4 text-center w-full">
-                        <Skeleton className="h-8 w-3/4 mb-2 mx-auto" />
-                        <Skeleton className="h-6 w-1/2 mx-auto" />
-                      </CardContent>
-                    </div>
-                  ))
-                ) : products.length === 0 ? (
-                  <div className="w-full text-center text-gray-400 py-16">
-                    No product found for this farm.
-                  </div>
-                ) : (
-                  products.map((product) => (
-                    <div
-                      key={product.title}
-                      className="product-card group snap-center min-w-[260px] sm:min-w-[300px] max-w-[350px] bg-gray-50 rounded-xl shadow-md flex flex-col items-center overflow-hidden"
-                    >
-                      <div className="w-full h-[220px] relative">
-                        {!imgLoadedMap[product.title] && (
-                          <Skeleton className="absolute inset-0 w-full h-full" />
-                        )}
-                        <Image
-                          src={product?.image}
-                          alt={product.image.alt}
-                          width={320}
-                          height={220}
-                          className={`object-cover w-full h-full transition-transform duration-300 group-hover:scale-110 transition-opacity duration-300 ${
-                            imgLoadedMap[product.title]
-                              ? "opacity-100"
-                              : "opacity-0"
-                          }`}
-                          onLoad={() =>
-                            setImgLoadedMap((prev) => ({
-                              ...prev,
-                              [product.title]: true,
-                            }))
-                          }
-                        />
-                        <div className="absolute inset-0 z-10 scale-110 bg-black/70 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 px-4">
-                          <span className="text-white text-sm text-center z-20">
-                            {product.desc}
-                          </span>
+                {/* Scrollable Product Cards */}
+                <div
+                  ref={scrollerRef}
+                  className="flex overflow-x-auto gap-4 sm:gap-6 md:gap-8 w-full pb-4 snap-x snap-mandatory px-1 sm:px-2"
+                  style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+                >
+                  {loading ? (
+                    [1, 2, 3].map((i) => (
+                      <div
+                        key={i}
+                        className="product-card group snap-center min-w-[260px] sm:min-w-[300px] max-w-[350px] bg-gray-50 rounded-xl shadow-md flex flex-col items-center overflow-hidden"
+                      >
+                        <div className="w-full h-[220px] relative">
+                          <Skeleton className="w-full h-full" />
                         </div>
+                        <CardContent className="p-4 text-center w-full">
+                          <Skeleton className="h-8 w-3/4 mb-2 mx-auto" />
+                          <Skeleton className="h-6 w-1/2 mx-auto" />
+                        </CardContent>
                       </div>
-                      <CardContent className="p-4 text-center w-full">
-                        <h3 className="text-2xl font-bold mb-1">
-                          {product.title}
-                        </h3>
-                        <span className="text-green-700 font-semibold text-lg">
-                          {product.prix} DA
-                        </span>
-                        {/* ===== Bouton Commander ===== */}
-                        <button
-                          onClick={() => handleOrder(product)}
-                          className="mt-3 w-full bg-gray-800 text-white py-2 rounded-xl hover:bg-gray-700 transition"
-                        >
-                          Order Now
-                        </button>
-                      </CardContent>
+                    ))
+                  ) : products.length === 0 ? (
+                    <div className="w-full text-center text-gray-400 py-16">
+                      No product found for this farm.
                     </div>
-                  ))
-                )}
+                  ) : (
+                    products.map((product) => (
+                      <div
+                        key={product.title}
+                        className="product-card group snap-center min-w-[260px] sm:min-w-[300px] max-w-[350px] bg-gray-50 rounded-xl shadow-md flex flex-col items-center overflow-hidden"
+                      >
+                        <div className="w-full h-[220px] relative">
+                          {!imgLoadedMap[product.title] && (
+                            <Skeleton className="absolute inset-0 w-full h-full" />
+                          )}
+                          <Image
+                            src={product?.image}
+                            alt={product.image.alt}
+                            width={320}
+                            height={220}
+                            className={`object-cover w-full h-full transition-transform duration-300 group-hover:scale-110 transition-opacity duration-300 ${
+                              imgLoadedMap[product.title]
+                                ? "opacity-100"
+                                : "opacity-0"
+                            }`}
+                            onLoad={() =>
+                              setImgLoadedMap((prev) => ({
+                                ...prev,
+                                [product.title]: true,
+                              }))
+                            }
+                          />
+                          <div className="absolute inset-0 z-10 scale-110 bg-black/70 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 px-4">
+                            <span className="text-white text-sm text-center z-20">
+                              {product.desc}
+                            </span>
+                          </div>
+                        </div>
+                        <CardContent className="p-4 text-center w-full">
+                          <h3 className="text-2xl font-bold mb-1">
+                            {product.title}
+                          </h3>
+                          <span className="text-green-700 font-semibold text-lg">
+                            {product.prix} DA
+                          </span>
+                          {/* ===== Bouton Commander ===== */}
+                          <button
+                            onClick={() => handleOrder(product)}
+                            className="mt-3 w-full bg-gray-800 text-white py-2 rounded-xl hover:bg-gray-700 transition"
+                          >
+                            Order Now
+                          </button>
+                        </CardContent>
+                      </div>
+                    ))
+                  )}
+                </div>
+
+                {/* Right Scroll Button (desktop only) */}
+                <button
+                  onClick={() => scrollByCard(1)}
+                  className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white/80 hover:bg-white border border-gray-200 rounded-full shadow p-2 hidden md:block"
+                >
+                  <svg
+                    width="28"
+                    height="28"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <path d="M11 21l6-7-6-7" />
+                  </svg>
+                </button>
               </div>
 
-              {/* Right Scroll Button (desktop only) */}
-              <button
-                onClick={() => scrollByCard(1)}
-                className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white/80 hover:bg-white border border-gray-200 rounded-full shadow p-2 hidden md:block"
-              >
-                <svg
-                  width="28"
-                  height="28"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
-                  <path d="M11 21l6-7-6-7" />
-                </svg>
-              </button>
-            </div>
-
-            {/* Scroll Hint (only on mobile) */}
-            <div className="mt-4 text-gray-400 text-sm block md:hidden text-center">
-              ← Swipe for more products →
-            </div>
-          </Card>
-        </motion.div>
+              {/* Scroll Hint (only on mobile) */}
+              <div className="mt-4 text-gray-400 text-sm block md:hidden text-center">
+                ← Swipe for more products →
+              </div>
+            </Card>
+          </motion.div>
+        </div>
 
         {/* Catering Section */}
         <motion.div

@@ -89,7 +89,10 @@ export default function Home() {
               <div ref={refDiscoverPAge}>
                 <FarmsDiscover setselectedfarm={setSelectedFarm} />
               </div>
-              <ProductList />
+              <div ref={refCommande}>
+                {" "}
+                <ProductList />
+              </div>
               <motion.div
                 initial={{ opacity: 0, y: 100 }}
                 whileInView={{ opacity: 1, y: 0 }}
